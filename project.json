@@ -6,7 +6,7 @@
     "compilerName": "fsc",
     "compile": {
       "includeFiles": [
-        "Controllers/ValueController.fs",
+        "Controllers/ValuesController.fs",
         "Program.fs"
       ]
     }
