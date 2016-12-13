@@ -8,3 +8,5 @@
 *.lock.json
 *.sln
 *.xproj
+/.vscode/
+/.vs/

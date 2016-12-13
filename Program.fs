@@ -4,14 +4,19 @@ open Microsoft.AspNetCore.Hosting
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
+open Microsoft.Extensions.Logging
+open FSharpWebApi.Models
+open FSharpWebApi.Repository
  
 type Startup(env: IHostingEnvironment) =
  
     member this.ConfigureServices(services: IServiceCollection) =
+        services.AddScoped<IRepository<Todo>, InMemoryRepository<Todo>>() |> ignore
         services.AddMvc() |> ignore
  
-    member this.Configure (app: IApplicationBuilder) =
+    member this.Configure (app: IApplicationBuilder, loggerFactory: ILoggerFactory) =
         app.UseMvc() |> ignore
+        loggerFactory.AddConsole() |> ignore
  
 [<EntryPoint>]
 let main argv = 

@@ -6,7 +6,11 @@
     "compilerName": "fsc",
     "compile": {
       "includeFiles": [
-        "Controllers/ValuesController.fs",
+        "Models/IIdentifiable.fs",
+        "Models/Todo.fs",
+        "Repository/IRepository.fs",
+        "Repository/InMemoryRepository.fs",
+        "Controllers/TodosController.fs",
         "Program.fs"
       ]
     }
@@ -25,7 +29,9 @@
         "Microsoft.AspNetCore.Mvc": "1.0.1",
         "Microsoft.AspNetCore.Routing": "1.0.1",
         "Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
-        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0"
+        "Microsoft.Extensions.Options.ConfigurationExtensions": "1.0.0",
+        "Microsoft.Extensions.Logging": "1.0.1",
+        "Microsoft.Extensions.Logging.Console": "1.0.1"
       }
     }
   }
