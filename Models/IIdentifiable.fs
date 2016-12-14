@@ -3,4 +3,4 @@
 open System
 
 type IIdentifiable =
-    abstract member Id : int with get
+    abstract member Id : int with get, set
