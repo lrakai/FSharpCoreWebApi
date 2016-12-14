@@ -8,7 +8,7 @@ open FSharpWebApi.Repository
 open FSharpWebApi.Models
  
 [<Route("api/todos")>]
-type TodosController(fromRepository : IRepository<Todo>) as self =
+type TodosController(repository : IRepository<Todo>) as self =
     inherit Controller()
     
     let optionResponse =
@@ -18,12 +18,12 @@ type TodosController(fromRepository : IRepository<Todo>) as self =
 
     [<HttpGet>]
     member x.Get() =
-        fromRepository.GetAll()
+        repository.GetAll()
 
     [<HttpGet>]
     [<Route("{id:int}", Name = "GetById")>]
     member x.Get id : IActionResult =
-        let todo = fromRepository.Get id
+        let todo = repository.Get id
         optionResponse todo
 
     
@@ -33,15 +33,26 @@ type TodosController(fromRepository : IRepository<Todo>) as self =
         | false -> x.BadRequest(x.ModelState) :> _
         | true  -> 
             try
-                let addedItem = fromRepository.Add todo
+                let addedItem = repository.Add todo
                 let rv = RouteValueDictionary()
                 rv.Add("id", (todo :> IIdentifiable).Id)
                 x.CreatedAtRoute("GetById", rv, addedItem) :> _
             with
                 | _ -> x.StatusCode(500, "Operation failed") :> _
 
+    [<HttpPut>]
+    [<Route("{id:int}")>]
+    member x.Put id ([<FromBody>] todo : Todo) : IActionResult =
+        match x.ModelState.IsValid with
+        | false -> x.BadRequest(x.ModelState) :> _
+        | true -> match todo.Id = id with
+                  | false -> x.BadRequest("id must match member Id property") :> _
+                  | _ -> 
+                        let result = repository.Update todo
+                        x.Ok(result) :> _
+
     [<HttpDelete>]
     [<Route("{id:int}")>]
     member x.Delete id : IActionResult =
-        let todo = fromRepository.Remove id
+        let todo = repository.Remove id
         optionResponse todo

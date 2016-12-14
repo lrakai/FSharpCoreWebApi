@@ -9,6 +9,8 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
     static let _index = ref 0
 
     let findId id item = (item :> IIdentifiable).Id = id
+
+    let replace index replacement = List.mapi (fun i item -> if i = index then replacement else item)
     
     let rec removeFirst predicate list =
         match list with
@@ -32,11 +34,20 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
                 incr _index
                 item)
 
+        member x.Update (item : 'T) =
+            lock _list (fun () ->
+                let foundIndex = List.tryFindIndex (findId (item :> IIdentifiable).Id) _list
+                match foundIndex with
+                | None -> None
+                | Some value ->
+                    _list <- replace value item _list
+                    Some item)
+
         member x.Remove (id : int) =
             lock _list (fun () ->
                 let foundItem = List.tryFind (findId id) _list
                 match foundItem with
                 | None -> None
-                | Some v ->
-                    _list <- removeFirst (fun (item) -> (item :> IIdentifiable).Id = (v :> IIdentifiable).Id) _list
+                | Some value ->
+                    _list <- removeFirst (fun (item) -> (item :> IIdentifiable).Id = (value :> IIdentifiable).Id) _list
                     foundItem)
