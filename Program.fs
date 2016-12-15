@@ -11,7 +11,9 @@ open FSharpWebApi.Repository
 type Startup(env: IHostingEnvironment) =
  
     member this.ConfigureServices(services: IServiceCollection) =
-        services.AddScoped<IRepository<Todo>, InMemoryRepository<Todo>>() |> ignore
+        let elasticsearchConfiguration = new ElasticsearchConfiguration("todos")
+        services.AddSingleton<ElasticsearchConfiguration>(elasticsearchConfiguration) |> ignore
+        services.AddScoped<IRepository<Todo>, ElasticsearchRepository<Todo>>() |> ignore
         services.AddMvc() |> ignore
  
     member this.Configure (app: IApplicationBuilder, loggerFactory: ILoggerFactory) =
