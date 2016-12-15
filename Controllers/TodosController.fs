@@ -21,7 +21,7 @@ type TodosController(repository : IRepository<Todo>) as self =
         repository.GetAll()
 
     [<HttpGet>]
-    [<Route("{id:int}", Name = "GetById")>]
+    [<Route("{id:guid}", Name = "GetById")>]
     member x.Get id : IActionResult =
         let todo = repository.Get id
         optionResponse todo
@@ -41,7 +41,7 @@ type TodosController(repository : IRepository<Todo>) as self =
                 | _ -> x.StatusCode(500, "Operation failed") :> _
 
     [<HttpPut>]
-    [<Route("{id:int}")>]
+    [<Route("{id:guid}")>]
     member x.Put id ([<FromBody>] todo : Todo) : IActionResult =
         match x.ModelState.IsValid with
         | false -> x.BadRequest(x.ModelState) :> _
@@ -52,7 +52,7 @@ type TodosController(repository : IRepository<Todo>) as self =
                         x.Ok(result) :> _
 
     [<HttpDelete>]
-    [<Route("{id:int}")>]
+    [<Route("{id:guid}")>]
     member x.Delete id : IActionResult =
         let todo = repository.Remove id
         optionResponse todo

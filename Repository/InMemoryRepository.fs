@@ -1,12 +1,12 @@
 ﻿namespace FSharpWebApi.Repository
 
+open System
 open System.Linq
 open Microsoft.FSharp.Collections
 open FSharpWebApi.Models
 
 type InMemoryRepository<'T when 'T :> IIdentifiable >() =
     static let mutable _list : List<'T> = []
-    static let _index = ref 0
 
     let findId id item = (item :> IIdentifiable).Id = id
 
@@ -23,15 +23,14 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
             lock _list (fun () -> 
                 _list :> _)
 
-        member x.Get (id : int) = 
+        member x.Get (id : Guid) = 
             lock _list (fun () -> 
                 List.tryFind (findId id) _list)
                 
         member x.Add (item : 'T) =
             lock _list (fun () ->
-                (item :> IIdentifiable).Id <- _index.Value
+                (item :> IIdentifiable).Id <- Guid.NewGuid()
                 _list <- List.append _list [item]
-                incr _index
                 item)
 
         member x.Update (item : 'T) =
@@ -43,7 +42,7 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
                     _list <- replace value item _list
                     Some item)
 
-        member x.Remove (id : int) =
+        member x.Remove (id : Guid) =
             lock _list (fun () ->
                 let foundItem = List.tryFind (findId id) _list
                 match foundItem with
