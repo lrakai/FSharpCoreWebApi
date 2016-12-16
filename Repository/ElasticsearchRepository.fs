@@ -31,15 +31,21 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
     let documentPath docType (id:string) = 
         (DocumentPath<'T>.op_Implicit id).Index(index).Type(docType)
 
+    let indexItem item = 
+        client.Index<'T>(item, func (indexer index))
+
     let getResult id = 
         client.Get(documentPath (TypeName.From<'T>()) (id |> string))
+
+    let searchItems = 
+        Seq.cast(client.Search<'T>().Documents)
         
     let deleteItem id = 
         client.Delete(documentPath (TypeName.From<'T>()) (id |> string))
 
     interface FSharpWebApi.Repository.IRepository<'T> with
         member x.GetAll () = 
-             Seq.cast(client.Search<'T>().Documents)
+             searchItems
 
         member x.Get (id : Guid) = 
             let result = getResult id
@@ -52,7 +58,7 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
             ((x :> FSharpWebApi.Repository.IRepository<'T>).Update item).Value
             
         member x.Update (item : 'T) =
-            let indexResponse = client.Index<'T>(item, func (indexer index))
+            let indexResponse = indexItem item
             Some(item)
 
         member x.Remove (id : Guid) =
