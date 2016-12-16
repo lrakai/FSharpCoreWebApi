@@ -13,7 +13,7 @@ type Startup(env: IHostingEnvironment) =
     member this.ConfigureServices(services: IServiceCollection) =
         let elasticsearchConfiguration = new ElasticsearchConfiguration("todos")
         services.AddSingleton<ElasticsearchConfiguration>(elasticsearchConfiguration) |> ignore
-        services.AddScoped<IRepository<Todo>, ElasticsearchRepository<Todo>>() |> ignore
+        services.AddScoped<ISearchableRepository<Todo>, ElasticsearchRepository<Todo>>() |> ignore
         services.AddMvc() |> ignore
  
     member this.Configure (app: IApplicationBuilder, loggerFactory: ILoggerFactory) =

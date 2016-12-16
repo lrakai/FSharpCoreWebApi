@@ -9,6 +9,7 @@
         "Models/IIdentifiable.fs",
         "Models/Todo.fs",
         "Repository/IRepository.fs",
+        "Repository/ISearchableRepository.fs",
         "Repository/InMemoryRepository.fs",
         "Repository/ElasticsearchRepository.fs",
         "Controllers/TodosController.fs",

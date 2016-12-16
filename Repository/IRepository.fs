@@ -1,7 +1,6 @@
 ﻿namespace FSharpWebApi.Repository
 
 open System
-open System.Collections.Generic
 open FSharpWebApi.Models
 
 type IRepository<'T when 'T :> IIdentifiable > = 

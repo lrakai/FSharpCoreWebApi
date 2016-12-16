@@ -28,7 +28,7 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
     let func (f:('a->'b)) =
         new Func<'a,'b>(f)
 
-    let documentPath docType (id:string) = 
+    let documentPath docType (id : string) = 
         (DocumentPath<'T>.op_Implicit id).Index(index).Type(docType)
 
     let indexItem item = 
@@ -36,33 +36,44 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
 
     let getResult id = 
         client.Get(documentPath (TypeName.From<'T>()) (id |> string))
-
-    let searchItems = 
+        
+    let getAllItems = 
         Seq.cast(client.Search<'T>().Documents)
+
+    let searchRequest (property : string) (keyword : string) = 
+        new SearchRequest<'T>(From = Nullable<int>(0), Size = Nullable<int>(50), 
+            Query = new QueryContainer(new QueryStringQuery(Query = keyword)))
+            
+    let searchItems property keyword = 
+        let request = searchRequest property keyword
+        Seq.cast(client.Search<'T>(request).Documents)
         
     let deleteItem id = 
         client.Delete(documentPath (TypeName.From<'T>()) (id |> string))
 
-    interface FSharpWebApi.Repository.IRepository<'T> with
+    interface ISearchableRepository<'T> with
         member x.GetAll () = 
-             searchItems
+             getAllItems
 
         member x.Get (id : Guid) = 
             let result = getResult id
             match result.Found with
             | false -> None
             | true -> Some(result.Source)
+
+        member x.Search property keyword =
+            searchItems property keyword
                         
         member x.Add (item : 'T) =
             item.Id <- Guid.NewGuid()
-            ((x :> FSharpWebApi.Repository.IRepository<'T>).Update item).Value
+            ((x :> ISearchableRepository<'T>).Update item).Value
             
         member x.Update (item : 'T) =
             let indexResponse = indexItem item
             Some(item)
 
         member x.Remove (id : Guid) =
-            let foundItem = ((x :> FSharpWebApi.Repository.IRepository<'T>).Get id)
+            let foundItem = ((x :> ISearchableRepository<'T>).Get id)
             match foundItem with
             | Some value -> deleteItem id |> ignore
             | _ -> ()

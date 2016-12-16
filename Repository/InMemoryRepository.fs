@@ -2,6 +2,7 @@
 
 open System
 open System.Linq
+open System.Reflection
 open Microsoft.FSharp.Collections
 open FSharpWebApi.Models
 
@@ -10,6 +11,16 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
 
     let findId id item = (item :> IIdentifiable).Id = id
 
+    let (|InvariantEqual|_|) (keyword : string) (str : string) = 
+        if str.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0
+        then Some() else None
+
+    let stringMatch property keyword item =
+        let propertyInfo = item.GetType().GetProperty(property)
+        match (propertyInfo.GetValue(item, null) |> string) with
+        | InvariantEqual keyword -> true
+        | _ -> false 
+    
     let replace index replacement = List.mapi (fun i item -> if i = index then replacement else item)
     
     let rec removeFirst predicate list =
@@ -18,10 +29,14 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
         | head::tail -> head::removeFirst predicate tail
         | _ -> []
 
-    interface IRepository<'T> with
+    interface ISearchableRepository<'T> with
         member x.GetAll () = 
             lock _list (fun () -> 
                 _list :> _)
+
+        member x.Search property keyword =
+            lock _list (fun () -> 
+                List.filter (stringMatch property keyword) _list :> _)
 
         member x.Get (id : Guid) = 
             lock _list (fun () -> 

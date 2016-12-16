@@ -8,7 +8,7 @@ open FSharpWebApi.Repository
 open FSharpWebApi.Models
  
 [<Route("api/todos")>]
-type TodosController(repository : IRepository<Todo>) as self =
+type TodosController(repository : ISearchableRepository<Todo>) as self =
     inherit Controller()
     
     let optionResponse =
@@ -17,8 +17,10 @@ type TodosController(repository : IRepository<Todo>) as self =
         | None -> self.NotFound() :> IActionResult
 
     [<HttpGet>]
-    member x.Get() =
-        repository.GetAll()
+    member x.Get (search : string) =
+        match String.IsNullOrEmpty(search) with
+        | true -> repository.GetAll()
+        | false -> repository.Search "Message" search
 
     [<HttpGet>]
     [<Route("{id:guid}", Name = "GetById")>]
