@@ -1,5 +1,5 @@
 # FSharpCoreWebApi
-ASP.NET Core Web API in F#
+ASP.NET Core Web API in F#.  Includes in-memory and Elasticsearch repositories.
 
 ## Run
 ```
