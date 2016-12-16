@@ -11,19 +11,6 @@ type ElasticsearchConfiguration(indexName : string) =
 
 // Some NEST snippets from https://gist.github.com/mjul/f5c936d116a2b89c3da8f63afad628e7/
 type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(configuration : ElasticsearchConfiguration) =
-    static let mutable _list : List<'T> = []
-    static let _index = ref 0
-
-    let findId id item = (item :> IIdentifiable).Id = id
-
-    let replace index replacement = List.mapi (fun i item -> if i = index then replacement else item)
-    
-    let rec removeFirst predicate list =
-        match list with
-        | head::tail when predicate head -> tail
-        | head::tail -> head::removeFirst predicate tail
-        | _ -> []
-
     let node = new Uri("http://127.0.0.1:9200")
     let settings = (new ConnectionSettings(node)).DefaultIndex(configuration.IndexName)
     let client = new ElasticClient(settings)
@@ -46,6 +33,9 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
 
     let getResult id = 
         client.Get(documentPath (TypeName.From<'T>()) (id |> string))
+        
+    let deleteItem id = 
+        client.Delete(documentPath (TypeName.From<'T>()) (id |> string))
 
     interface FSharpWebApi.Repository.IRepository<'T> with
         member x.GetAll () = 
@@ -59,11 +49,15 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
                         
         member x.Add (item : 'T) =
             item.Id <- Guid.NewGuid()
-            let indexResponse = client.Index<'T>(item, func (indexer index))
-            item
+            ((x :> FSharpWebApi.Repository.IRepository<'T>).Update item).Value
             
         member x.Update (item : 'T) =
-            Some item
+            let indexResponse = client.Index<'T>(item, func (indexer index))
+            Some(item)
 
         member x.Remove (id : Guid) =
-            None
+            let foundItem = ((x :> FSharpWebApi.Repository.IRepository<'T>).Get id)
+            match foundItem with
+            | Some value -> deleteItem id |> ignore
+            | _ -> ()
+            foundItem
