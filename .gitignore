@@ -1,12 +1,12 @@
-﻿################################################################################
-# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
-################################################################################
-
-/bin/
-/obj/
+﻿
+/src/FSharpWebApi/bin/
+/src/FSharpWebApi/obj/
+/test/FSharpWebApi.Tests/bin/
+/test/FSharpWebApi.Tests/obj/
 *.user
 *.lock.json
 *.sln
 *.xproj
 /.vscode/
 /.vs/
+

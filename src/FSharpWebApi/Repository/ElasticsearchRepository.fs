@@ -52,28 +52,28 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
         client.Delete(documentPath (TypeName.From<'T>()) (id |> string))
 
     interface ISearchableRepository<'T> with
-        member x.GetAll () = 
+        member self.GetAll () = 
              getAllItems
 
-        member x.Get (id : Guid) = 
+        member self.Get (id : Guid) = 
             let result = getResult id
             match result.Found with
             | false -> None
             | true -> Some(result.Source)
 
-        member x.Search property keyword =
+        member self.Search property keyword =
             searchItems property keyword
                         
-        member x.Add (item : 'T) =
+        member self.Add (item : 'T) =
             item.Id <- Guid.NewGuid()
-            ((x :> ISearchableRepository<'T>).Update item).Value
+            ((self :> ISearchableRepository<'T>).Update item).Value
             
-        member x.Update (item : 'T) =
+        member self.Update (item : 'T) =
             let indexResponse = indexItem item
             Some(item)
 
-        member x.Remove (id : Guid) =
-            let foundItem = ((x :> ISearchableRepository<'T>).Get id)
+        member self.Remove (id : Guid) =
+            let foundItem = ((self :> ISearchableRepository<'T>).Get id)
             match foundItem with
             | Some value -> deleteItem id |> ignore
             | _ -> ()

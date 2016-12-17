@@ -29,26 +29,29 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
         | head::tail -> head::removeFirst predicate tail
         | _ -> []
 
+    member self.clear () =
+        _list <- []
+
     interface ISearchableRepository<'T> with
-        member x.GetAll () = 
+        member self.GetAll () = 
             lock _list (fun () -> 
                 _list :> _)
 
-        member x.Search property keyword =
+        member self.Search property keyword =
             lock _list (fun () -> 
                 List.filter (stringMatch property keyword) _list :> _)
 
-        member x.Get (id : Guid) = 
+        member self.Get (id : Guid) = 
             lock _list (fun () -> 
                 List.tryFind (findId id) _list)
                 
-        member x.Add (item : 'T) =
+        member self.Add (item : 'T) =
             lock _list (fun () ->
                 (item :> IIdentifiable).Id <- Guid.NewGuid()
                 _list <- List.append _list [item]
                 item)
 
-        member x.Update (item : 'T) =
+        member self.Update (item : 'T) =
             lock _list (fun () ->
                 let foundIndex = List.tryFindIndex (findId (item :> IIdentifiable).Id) _list
                 match foundIndex with
@@ -57,7 +60,7 @@ type InMemoryRepository<'T when 'T :> IIdentifiable >() =
                     _list <- replace value item _list
                     Some item)
 
-        member x.Remove (id : Guid) =
+        member self.Remove (id : Guid) =
             lock _list (fun () ->
                 let foundItem = List.tryFind (findId id) _list
                 match foundItem with
