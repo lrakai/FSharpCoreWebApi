@@ -14,6 +14,11 @@ DELETE /{id:guid}
 
 ## Run
 ```
-dotnet restore && dotnet run
+cd src/FSharpWebApi && dotnet restore && dotnet run
 ```
 When finished the server will be listening on port 5000.
+
+## Test
+```
+dotnet restore && cd test/FSharpWebApi.Tests && dotnet test
+```
