@@ -22,3 +22,19 @@ When finished the server will be listening on port 5000.
 ```
 dotnet restore && cd test/FSharpWebApi.Tests && dotnet test
 ```
+
+## Dockerizing
+Two containers are used, one for building and one for deploying the app, to reduce the size of the deployed image.
+
+### Step 1: Build container
+```
+docker build -t fsharpwebapi-build -f Dockerfile.build .
+docker create --name fsharpwebapi-build fsharpwebapi-build
+docker cp fsharpwebapi-build:/out ./src/FSharpWebApi/bin/Publish
+```
+
+### Step 2: App container
+```
+docker build -t fsharpwebapi .
+docker run -d -p 80:5000 -e "FSHARPWEBAPI_ES_CONNECTION=http://elasticsearch_server:9200" fsharpwebapi
+```

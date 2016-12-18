@@ -6,12 +6,13 @@ open Microsoft.FSharp.Collections
 open FSharpWebApi.Models
 open Nest
 
-type ElasticsearchConfiguration(indexName : string) =
+type ElasticsearchConfiguration(indexName : string, connectionString : string) =
     member val IndexName = indexName
+    member val ConnectionString = connectionString
 
 // Some NEST snippets from https://gist.github.com/mjul/f5c936d116a2b89c3da8f63afad628e7/
 type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(configuration : ElasticsearchConfiguration) =
-    let node = new Uri("http://127.0.0.1:9200")
+    let node = new Uri(configuration.ConnectionString)
     let settings = (new ConnectionSettings(node)).DefaultIndex(configuration.IndexName)
     let client = new ElasticClient(settings)
     
@@ -53,7 +54,7 @@ type ElasticsearchRepository<'T when 'T :> IIdentifiable and 'T : not struct>(co
 
     interface ISearchableRepository<'T> with
         member self.GetAll () = 
-             getAllItems
+            getAllItems
 
         member self.Get (id : Guid) = 
             let result = getResult id

@@ -11,14 +11,19 @@ open FSharpWebApi.Repository
 type Startup(env: IHostingEnvironment) =
  
     member this.ConfigureServices(services: IServiceCollection) =
-        let elasticsearchConfiguration = new ElasticsearchConfiguration("todos")
+        let elasticsearchEnvConnection = Environment.GetEnvironmentVariable("FSHARPWEBAPI_ES_CONNECTION")
+        let elasticsearchConnection = match System.String.IsNullOrWhiteSpace elasticsearchEnvConnection with
+                                      | true -> "http://0.0.0.0:9200"
+                                      | false -> elasticsearchEnvConnection
+        let elasticsearchConfiguration = new ElasticsearchConfiguration("todos", elasticsearchConnection)
         services.AddSingleton<ElasticsearchConfiguration>(elasticsearchConfiguration) |> ignore
         services.AddScoped<ISearchableRepository<Todo>, ElasticsearchRepository<Todo>>() |> ignore
         services.AddMvc() |> ignore
  
-    member this.Configure (app: IApplicationBuilder, loggerFactory: ILoggerFactory) =
+    member this.Configure (app: IApplicationBuilder, env: IHostingEnvironment, loggerFactory: ILoggerFactory) =
         app.UseMvc() |> ignore
-        loggerFactory.AddConsole() |> ignore
+        if env.IsDevelopment() then
+            loggerFactory.AddConsole() |> ignore
  
 [<EntryPoint>]
 let main argv = 

@@ -1,0 +1,19 @@
+#
+# FSharpCoreWebApi Dockerfile for building and publishing artifacts
+#
+# https://github.com/lrakai/FSharpCoreWebApi
+#
+
+FROM microsoft/aspnetcore-build:1.0.3-projectjson
+
+MAINTAINER lrakai
+
+WORKDIR /FSharpWebApi
+
+COPY src/FSharpWebApi/project.json .
+
+RUN dotnet restore
+
+COPY src/FSharpWebApi .
+
+RUN dotnet publish --output /out/. --configuration Release
