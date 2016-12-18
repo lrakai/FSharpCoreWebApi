@@ -16,7 +16,7 @@ test:
     - dotnet test ./test/FSharpWebApi.Tests/
 
 deployment:
-  release:
+  master:
     branch: master
     commands:
-      - ./deploy_master.sh
+      - sh deploy_master.sh

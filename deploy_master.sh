@@ -1,8 +1,10 @@
 #!/bin/bash
 
+# Create publish artifacts
 cd src/FSharpWebApi/
 dotnet publish --output bin/Publish --configuration Release
 
+# Push artifacts to release branch (Triggering docker hub build)
 cd bin/Publish
 git init
 git checkout -b "master"
