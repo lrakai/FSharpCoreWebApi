@@ -1,3 +1,7 @@
+machine:
+  environment:
+    ASPNETCORE_ENVIRONMENT: Production
+
 dependencies:
   pre:
     - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
@@ -10,3 +14,9 @@ dependencies:
 test:
   override:
     - dotnet test ./test/FSharpWebApi.Tests/
+
+deployment:
+  release:
+    branch: master
+    commands:
+      - ./deploy_master.sh
