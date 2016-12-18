@@ -6,10 +6,9 @@ dotnet publish --output bin/Publish --configuration Release
 
 # Push artifacts to release branch (Triggering docker hub build)
 cd bin/Publish
-git init
 git checkout -b "master"
 git config user.name "CircleCI"
 git config user.email "CircleCI@circle.ci"
-git add -A
+git add -f .
 git commit -m "build from Circle CI"
 git push origin master:release -f
