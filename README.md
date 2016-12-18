@@ -3,13 +3,13 @@ ASP.NET Core todo note Web API in F#.  Includes in-memory and Elasticsearch repo
 
 ## API
 ```
-Method Path            Body
-GET    /
-GET    ?search=keyword 
-GET    /{id:guid}      
-POST   /               {"Message": "Todo message"}
-PUT    /{id:guid}      {"Id": id, "Message": "New todo message"}
-DELETE /{id:guid}
+Method Path                      Body
+GET    /api/todos/
+GET    /api/todos?search=keyword 
+GET    /api/todos/{id:guid}      
+POST   /api/todos/               {"Message": "Todo message"}
+PUT    /api/todos/{id:guid}      {"Id": id, "Message": "New todo message"}
+DELETE /api/todos/{id:guid}
 ```
 
 ## Run
