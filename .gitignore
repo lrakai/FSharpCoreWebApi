@@ -3,6 +3,7 @@
 /src/FSharpWebApi/obj/
 /test/FSharpWebApi.Tests/bin/
 /test/FSharpWebApi.Tests/obj/
+/docker/*.sh
 *.user
 *.lock.json
 *.sln
