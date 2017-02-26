@@ -38,3 +38,5 @@ docker cp fsharpwebapi-build:/out ./src/FSharpWebApi/bin/Publish
 docker build -t fsharpwebapi -f docker/Dockerfile .
 docker run -d -p 80:5000 -e "FSHARPWEBAPI_ES_CONNECTION=http://elasticsearch_server:9200" fsharpwebapi
 ```
+
+The container image is available on Docker Hub at https://hub.docker.com/r/lrakai/fsharpcorewebapi/.
