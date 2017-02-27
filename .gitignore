@@ -1,5 +1,6 @@
 ﻿
-/src/FSharpWebApi/bin/
+/src/FSharpWebApi/bin/*
+!/src/FSharpWebApi/bin/Publish/
 /src/FSharpWebApi/obj/
 /test/FSharpWebApi.Tests/bin/
 /test/FSharpWebApi.Tests/obj/
