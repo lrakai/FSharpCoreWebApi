@@ -12,7 +12,7 @@ ENV ASPNETCORE_ENVIRONMENT="Production"
 
 WORKDIR /FSharpWebApi
 
-COPY ../src/FSharpWebApi/bin/Publish .
+COPY src/FSharpWebApi/bin/Publish .
 
 ENTRYPOINT ["dotnet", "FSharpWebApi.dll"]
 
