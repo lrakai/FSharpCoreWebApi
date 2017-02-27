@@ -10,10 +10,8 @@ MAINTAINER lrakai
 
 WORKDIR /FSharpWebApi
 
-COPY src/FSharpWebApi/project.json .
+COPY src/FSharpWebApi .
 
 RUN dotnet restore
-
-COPY src/FSharpWebApi .
 
 RUN dotnet publish --output /out/. --configuration Release
